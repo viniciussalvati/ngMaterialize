@@ -15,12 +15,12 @@ gulp.task('compile', function () {
 	return merge([
 		tsPipes.dts,
 		tsPipes.js
-		]).pipe(gulp.dest('.'));
+	]).pipe(gulp.dest('dist'));
 });
 
 gulp.task('build', ['compile']);
 
-gulp.task('watch', ['build'], function(){
+gulp.task('watch', ['build'], function () {
 	gulp.watch('src/*.ts', ['build']);
 });
 

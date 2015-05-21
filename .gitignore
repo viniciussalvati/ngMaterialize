@@ -102,5 +102,5 @@ Temporary Items
 typings/*/*.ts
 
 #Ignores the generated files. This may be temporaly.
-ngMaterialize.js
-ngMaterialize.d.ts
+#ngMaterialize.js
+#ngMaterialize.d.ts

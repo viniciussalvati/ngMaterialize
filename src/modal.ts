@@ -43,11 +43,8 @@ interface IModalInstance {
 	dismiss(reason?: any)
 }
 
-interface IParametrizedModalInstance<T> extends IModalInstance {
-	params: T
-}
-
 interface IModalScope extends ng.IScope {
+	params?: any
 	$close?(result?: any)
 	$dismiss?(reason?: any)
 }
@@ -59,13 +56,14 @@ function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.ICo
 	};
 
 	function open(options: IModalOptions) {
-		var deferred = q.defer();
+		var resultDeferred = q.defer();
+		var openedDeferred = q.defer<void>();
 
 		getTemplate(options).then(function(modalBaseHtml) {
 			var modalBase = angular.element(modalBaseHtml);
 
 			var scope: IModalScope = (options.scope || rootScope).$new(false),
-				modalInstance = getModalInstance(options, deferred, modalBase, scope);
+				modalInstance = getModalInstance(options, resultDeferred, modalBase, scope);
 
 			scope.$close = modalInstance.close;
 			scope.$dismiss = modalInstance.dismiss;
@@ -73,7 +71,7 @@ function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.ICo
 			compile(modalBase)(scope);
 
 			var openModalOptions = {
-				//ready: function () { alert('Ready'); }, // Callback for Modal open
+				//ready: function() { openedDeferred.resolve(); }, // Callback for Modal open
 				complete: function() { modalInstance.dismiss(); } // Callback for Modal close
 			};
 
@@ -82,21 +80,21 @@ function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.ICo
 			modalBase.appendTo('body').openModal(openModalOptions);
 
 		}, function(error) {
-				deferred.reject({ templateError: error });
+				resultDeferred.reject({ templateError: error });
 			});
 
-		return deferred.promise;
+		return resultDeferred.promise;
 	}
 
-	function getModalInstance(options: IModalOptions, deferred: ng.IDeferred<any>, modalBase: JQuery, scope: ng.IScope): IModalInstance {
+	function getModalInstance(options: IModalOptions, resultDeferred: ng.IDeferred<any>, modalBase: JQuery, scope: ng.IScope): IModalInstance {
 		return {
 			params: options.params || {},
 			close: function(result) {
-				deferred.resolve(result);
+				resultDeferred.resolve(result);
 				closeModal(modalBase, scope);
 			},
 			dismiss: function(reason) {
-				deferred.reject(reason);
+				resultDeferred.reject(reason);
 				closeModal(modalBase, scope);
 			}
 		};
