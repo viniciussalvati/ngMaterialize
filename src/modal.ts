@@ -34,7 +34,7 @@ interface IModalOptions {
 	/**
 	 * The controller alias for the controllerAs sintax. Requires @controller
 	 */
-	controllerAs: string
+	controllerAs?: string
 }
 
 interface IModalInstance {
@@ -49,7 +49,7 @@ interface IModalScope extends ng.IScope {
 	$dismiss?(reason?: any)
 }
 
-ModalService.$inject = ['$q', '$http', '$controller', 'timeout', '$rootScope', '$compile'];
+ModalService.$inject = ['$q', '$http', '$controller', '$timeout', '$rootScope', '$compile'];
 function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.IControllerService, timeout: ng.ITimeoutService, rootScope: ng.IRootScopeService, compile: ng.ICompileService): IModalService {
 	var service: IModalService = {
 		open: open
