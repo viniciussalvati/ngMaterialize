@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var ts = require('gulp-typescript');
+var merge = require('merge2');
 
 var tsProject = ts.createProject({
 	out: 'ngMaterialize.js',
@@ -9,9 +10,12 @@ var tsProject = ts.createProject({
 });
 
 gulp.task('compile', function () {
-	gulp.src(['typings/**/*.ts', 'src/ngMaterialize.ts', 'src/*.ts'])
-		.pipe(ts(tsProject))
-		.pipe(gulp.dest('.'));
+	var tsPipes = gulp.src(['typings/**/*.ts', 'src/ngMaterialize.ts', 'src/*.ts'])
+		.pipe(ts(tsProject));
+	return merge([
+		tsPipes.dts,
+		tsPipes.js
+		]).pipe(gulp.dest('.'));
 });
 
 gulp.task('build', ['compile']);
