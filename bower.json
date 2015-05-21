@@ -1,0 +1,22 @@
+{
+  "name": "ngMaterialize",
+  "version": "0.1.0",
+  "homepage": "https://github.com/viniciusmelquiades/ngMaterialize",
+  "authors": [
+    "Vinicius Salvati Melquiades <vinicius.melquiades@outlook.com>"
+  ],
+  "keywords": [
+    "material",
+    "materialize",
+    "angular",
+    "ngMaterialize"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

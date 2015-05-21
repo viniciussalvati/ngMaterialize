@@ -1,0 +1,23 @@
+{
+  "name": "ngmaterialize",
+  "version": "1.0.0",
+  "description": "AngularJS wrapper for http://materializecss.com/",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viniciusmelquiades/ngMaterialize.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/viniciusmelquiades/ngMaterialize/issues"
+  },
+  "homepage": "https://github.com/viniciusmelquiades/ngMaterialize#readme",
+  "dependencies": {
+    "gulp": "^3.8.11",
+    "gulp-typescript": "^2.7.5"
+  }
+}
