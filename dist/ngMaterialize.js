@@ -1,7 +1,7 @@
 /// <reference path="../typings/tsd.d.ts" />
 "use strict";
 var ngMaterialize = angular.module('ngMaterialize', ['ng']);
-ModalService.$inject = ['$q', '$http', '$controller', 'timeout', '$rootScope', '$compile'];
+ModalService.$inject = ['$q', '$http', '$controller', '$timeout', '$rootScope', '$compile'];
 function ModalService(q, http, controller, timeout, rootScope, compile) {
     var service = {
         open: open

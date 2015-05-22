@@ -35,7 +35,7 @@ interface IModalOptions {
     /**
      * The controller alias for the controllerAs sintax. Requires @controller
      */
-    controllerAs: string;
+    controllerAs?: string;
 }
 interface IModalInstance {
     params: any;
