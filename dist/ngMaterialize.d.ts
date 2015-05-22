@@ -1,4 +1,3 @@
-/// <reference path="typings/tsd.d.ts" />
 declare var ngMaterialize: ng.IModule;
 interface IModalService {
     open(options: IModalOptions): ng.IPromise<any>;

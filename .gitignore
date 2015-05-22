@@ -99,7 +99,7 @@ Temporary Items
 
 
 # Ignores all the files in the typings folder, except the tsd.d.ts file.
-typings/*/*.ts
+**/typings/*/*.ts
 
 #Ignores the generated files. This may be temporaly.
 #ngMaterialize.js

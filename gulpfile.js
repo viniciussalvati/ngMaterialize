@@ -10,7 +10,7 @@ var tsProject = ts.createProject({
 });
 
 gulp.task('compile', function () {
-	var tsPipes = gulp.src(['typings/**/*.ts', 'src/ngMaterialize.ts', 'src/*.ts'])
+	var tsPipes = gulp.src(['src/ngMaterialize.ts', 'src/**/*.ts'])
 		.pipe(ts(tsProject));
 	return merge([
 		tsPipes.dts,
