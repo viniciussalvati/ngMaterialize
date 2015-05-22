@@ -2,7 +2,7 @@
   "name": "ngMaterialize",
   "version": "0.2.0",
   "homepage": "https://github.com/viniciusmelquiades/ngMaterialize",
-  "main": "dist/ngMaterialize.js",
+  "main": "dist/ngMaterialize.min.js",
   "authors": [
     "Vinicius Salvati Melquiades <vinicius.melquiades@outlook.com>"
   ],
