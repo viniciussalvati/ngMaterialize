@@ -1,3 +1,5 @@
+(function (angular) {
+
 "use strict";
 var ngMaterialize = angular.module('ngMaterialize', ['ng']);
 ModalService.$inject = ['$q', '$http', '$controller', '$timeout', '$rootScope', '$compile'];
@@ -7,7 +9,6 @@ function ModalService(q, http, controller, timeout, rootScope, compile) {
     };
     function open(options) {
         var resultDeferred = q.defer();
-        var openedDeferred = q.defer();
         getTemplate(options).then(function (modalBaseHtml) {
             var modalBase = angular.element(modalBaseHtml);
             var scope = (options.scope || rootScope).$new(false), modalInstance = getModalInstance(options, resultDeferred, modalBase, scope);
@@ -15,7 +16,7 @@ function ModalService(q, http, controller, timeout, rootScope, compile) {
             scope.$dismiss = modalInstance.dismiss;
             compile(modalBase)(scope);
             var openModalOptions = {
-                //ready: function() { openedDeferred.resolve(); }, // Callback for Modal open
+                //ready: function() { }, // Callback for Modal open
                 complete: function () {
                     modalInstance.dismiss();
                 } // Callback for Modal close
@@ -102,3 +103,5 @@ function ModalService(q, http, controller, timeout, rootScope, compile) {
     return service;
 }
 ngMaterialize.factory('$modal', ModalService);
+
+})(window.angular);

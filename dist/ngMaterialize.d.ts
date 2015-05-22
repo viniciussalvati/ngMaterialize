@@ -1,3 +1,5 @@
+module materialize {
+
 declare var ngMaterialize: ng.IModule;
 interface IModalService {
     open(options: IModalOptions): ng.IPromise<any>;
@@ -47,3 +49,5 @@ interface IModalScope extends ng.IScope {
     $dismiss?(reason?: any): any;
 }
 declare function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.IControllerService, timeout: ng.ITimeoutService, rootScope: ng.IRootScopeService, compile: ng.ICompileService): IModalService;
+
+}
