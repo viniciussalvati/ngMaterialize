@@ -9,6 +9,7 @@ function ModalService(q, http, controller, timeout, rootScope, compile) {
     };
     function open(options) {
         var resultDeferred = q.defer();
+        var openedDeferred = q.defer();
         getTemplate(options).then(function (modalBaseHtml) {
             var modalBase = angular.element(modalBaseHtml);
             var scope = (options.scope || rootScope).$new(false), modalInstance = getModalInstance(options, resultDeferred, modalBase, scope);
@@ -16,7 +17,7 @@ function ModalService(q, http, controller, timeout, rootScope, compile) {
             scope.$dismiss = modalInstance.dismiss;
             compile(modalBase)(scope);
             var openModalOptions = {
-                //ready: function() { }, // Callback for Modal open
+                //ready: function() { openedDeferred.resolve(); }, // Callback for Modal open
                 complete: function () {
                     modalInstance.dismiss();
                 } // Callback for Modal close
@@ -103,5 +104,27 @@ function ModalService(q, http, controller, timeout, rootScope, compile) {
     return service;
 }
 ngMaterialize.factory('$modal', ModalService);
+MaterialSelect.$inject = ['$timeout'];
+function MaterialSelect($timeout) {
+    var directive = {
+        link: link,
+        restrict: 'E',
+        require: '?ngModel'
+    };
+    function link(scope, element, attrs, ngModel) {
+        $timeout(create);
+        if (ngModel) {
+            ngModel.$render = create;
+        }
+        function create() {
+            element.material_select();
+        }
+        element.one('$destroy', function () {
+            element.material_select('destroy');
+        });
+    }
+    return directive;
+}
+ngMaterialize.directive('select', MaterialSelect);
 
 })(window.angular);
