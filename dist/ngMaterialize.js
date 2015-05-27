@@ -68,9 +68,15 @@ function ModalService(q, http, controller, timeout, rootScope, compile) {
                 resolve(resolveFunction(options.template) || '');
             }
         }).then(function (template) {
-            var cssClass = options.fixedFooter ? 'modal modal-fixed-footer' : 'modal';
+            var cssClass = ['modal'];
+            if (options.fixedFooter) {
+                cssClass.push('modal-fixed-footer');
+            }
+            if (options.cssClass) {
+                cssClass.push(options.cssClass);
+            }
             var html = [];
-            html.push('<div class="' + cssClass + '">');
+            html.push("<div class=\"" + cssClass.join(' ') + "\">");
             if (options.title) {
                 html.push('<div class="modal-header">');
                 html.push(options.title);

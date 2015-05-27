@@ -3,6 +3,7 @@ declare module materialize {
 var ngMaterialize: ng.IModule;
 interface IModalService {
     open(options: IModalOptions): ng.IPromise<any>;
+    open<T>(options: IModalOptions): ng.IPromise<T>;
 }
 interface IModalOptions {
     /**
@@ -37,6 +38,11 @@ interface IModalOptions {
      * The controller alias for the controllerAs sintax. Requires @controller
      */
     controllerAs?: string;
+    /**
+     * One or more space-separated css classes to add to the generated .modal element.
+     * @see {@link https://github.com/viniciusmelquiades/ngMaterialize/issues/2}
+     */
+    cssClass?: string;
 }
 interface IModalInstance {
     params: any;
