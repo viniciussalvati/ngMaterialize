@@ -35,6 +35,11 @@ interface IModalOptions {
 	 * The controller alias for the controllerAs sintax. Requires @controller
 	 */
 	controllerAs?: string
+	/**
+	 * One or more space-separated css classes to add to the generated .modal element.
+	 * @see {@link https://github.com/viniciusmelquiades/ngMaterialize/issues/2}
+	 */
+	cssClass?: string
 }
 
 interface IModalInstance {
@@ -128,9 +133,17 @@ function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.ICo
 			}
 		}).then(function(template: string) {
 
-			var cssClass = options.fixedFooter ? 'modal modal-fixed-footer' : 'modal';
+			var cssClass = ['modal'];
+			if (options.fixedFooter) {
+				cssClass.push('modal-fixed-footer');
+			}
+
+			if (options.cssClass) {
+				cssClass.push(options.cssClass);
+			}
+			
 			var html = [];
-			html.push('<div class="' + cssClass + '">');
+			html.push(`<div class="${cssClass.join(' ')}">`);
 			if (options.title) {
 				html.push('<div class="modal-header">');
 				html.push(options.title);
