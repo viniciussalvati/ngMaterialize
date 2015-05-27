@@ -1,5 +1,6 @@
 interface IModalService {
 	open(options: IModalOptions): ng.IPromise<any>
+	open<T>(options: IModalOptions): ng.IPromise<T>
 }
 
 interface IModalOptions {
@@ -60,8 +61,8 @@ function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.ICo
 		open: open
 	};
 
-	function open(options: IModalOptions) {
-		var resultDeferred = q.defer();
+	function open<T>(options: IModalOptions) {
+		var resultDeferred = q.defer<T>();
 		var openedDeferred = q.defer<void>();
 
 		getTemplate(options).then(function(modalBaseHtml) {
