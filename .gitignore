@@ -101,6 +101,9 @@ Temporary Items
 # Ignores all the files in the typings folder, except the tsd.d.ts file.
 **/typings/*/*.ts
 
+# Ignores the "build" folder, that should be used to test the compiled code. The dist code should go to bower.
+build
+
 #Ignores the generated files. This may be temporaly.
 #ngMaterialize.js
 #ngMaterialize.d.ts
