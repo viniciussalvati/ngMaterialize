@@ -19,42 +19,42 @@ var tsProject = ts.createProject({
 
 var release = !!util.env.release || util.env.r;
 
-function handleJsResults(jsPipe) {
-	var js = es.merge(gulp.src('src/js_before'), jsPipe, gulp.src('src/js_after'))
-		.pipe(concat('ngMaterialize.js'));
-	
-	var min = js
-		.pipe(clone())
-		.pipe(rename({ extname: '.min.js' }))
-		.pipe(uglify());
-
-	var gz = min
-		.pipe(clone())
-		.pipe(gzip({ append: true }));
-
-	return es.merge(js, min, gz);
-}
-
-function handleDtsResults(dtsPipe) {
-	var replacedText = dtsPipe.pipe(replace('declare ', ''));
-
-	return es.merge(gulp.src('src/dts_before'), replacedText, gulp.src('src/dts_after'))
-		.pipe(concat('ngMaterialize.d.ts'));
-}
-
 gulp.task('compile', function () {
 	var tsPipes = gulp.src(['src/ngMaterialize.ts', 'src/**/*.ts'])
 		.pipe(ts(tsProject));
 
-	var js = handleJsResults(tsPipes.js);
-
-	var dts = handleDtsResults(tsPipes.dts);
-
+	var js = tsPipes.js;
+	var dts = tsPipes.dts.pipe(replace('declare ', ''));
 	return es.merge([js, dts])
 		.pipe(gulp.dest('build'));
 });
 
-gulp.task('build', ['compile'], function () {
+gulp.task('concat-js', ['compile'], function () {
+	return gulp.src(['src/js_before', 'build/ngMaterialize.js', 'src/js_after'])
+		.pipe(concat('ngMaterialize.js'))
+		.pipe(gulp.dest('build'));
+});
+
+gulp.task('concat-dts', ['compile'], function () {
+	return gulp.src(['src/dts_before', 'build/ngMaterialize.d.ts', 'src/dts_after'])
+		.pipe(concat('ngMaterialize.d.ts'))
+		.pipe(gulp.dest('build'));
+});
+
+gulp.task('minify', ['concat-js'], function () {
+	return gulp.src('build/ngMaterialize.js')
+		.pipe(uglify())
+		.pipe(rename({ extname: '.min.js' }))
+		.pipe(gulp.dest('build'));
+});
+
+gulp.task('gzip', ['minify'], function () {
+	return gulp.src('build/ngMaterialize.min.js')
+		.pipe(gzip({ append: true }))
+		.pipe(gulp.dest('build'));
+});
+
+gulp.task('build', ['compile', 'concat-js', 'concat-dts', 'minify', 'gzip'], function () {
 	if (release) {
 		return gulp
 			.src('build/*')
