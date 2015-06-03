@@ -9,10 +9,22 @@ function ModalService(q, http, controller, timeout, rootScope, compile) {
     };
     function open(options) {
         var resultDeferred = q.defer();
-        var openedDeferred = q.defer();
+        var canceled = false;
+        var close = function (result) {
+            canceled = true;
+            resultDeferred.resolve(result);
+        }, dismiss = function (reason) {
+            canceled = true;
+            resultDeferred.reject(reason);
+        };
         getTemplate(options).then(function (modalBaseHtml) {
+            if (canceled) {
+                return;
+            }
             var modalBase = angular.element(modalBaseHtml);
             var scope = (options.scope || rootScope).$new(false), modalInstance = getModalInstance(options, resultDeferred, modalBase, scope);
+            close = modalInstance.close;
+            dismiss = modalInstance.dismiss;
             scope.$close = modalInstance.close;
             scope.$dismiss = modalInstance.dismiss;
             compile(modalBase)(scope);
@@ -27,7 +39,10 @@ function ModalService(q, http, controller, timeout, rootScope, compile) {
         }, function (error) {
             resultDeferred.reject({ templateError: error });
         });
-        return resultDeferred.promise;
+        var promise = resultDeferred.promise;
+        promise.close = function (result) { return close(result); };
+        promise.dismiss = function (reason) { return dismiss(reason); };
+        return promise;
     }
     function getModalInstance(options, resultDeferred, modalBase, scope) {
         return {

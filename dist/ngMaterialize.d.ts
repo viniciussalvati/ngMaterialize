@@ -2,8 +2,8 @@ declare module materialize {
 
 var ngMaterialize: ng.IModule;
 interface IModalService {
-    open(options: IModalOptions): ng.IPromise<any>;
-    open<T>(options: IModalOptions): ng.IPromise<T>;
+    open(options: IModalOptions): IModalPromise<any>;
+    open<T>(options: IModalOptions): IModalPromise<T>;
 }
 interface IModalOptions {
     /**
@@ -53,6 +53,10 @@ interface IModalScope extends ng.IScope {
     params?: any;
     $close?(result?: any): any;
     $dismiss?(reason?: any): any;
+}
+interface IModalPromise<T> extends ng.IPromise<T> {
+    close<T>(result?: T): any;
+    dismiss(reason?: any): any;
 }
 function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.IControllerService, timeout: ng.ITimeoutService, rootScope: ng.IRootScopeService, compile: ng.ICompileService): IModalService;
 function MaterialSelect($timeout: ng.ITimeoutService): ng.IDirective;

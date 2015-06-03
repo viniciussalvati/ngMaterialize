@@ -1,58 +1,63 @@
 interface IModalService {
-	open(options: IModalOptions): ng.IPromise<any>
-	open<T>(options: IModalOptions): ng.IPromise<T>
+	open(options: IModalOptions): IModalPromise<any>
+	open<T>(options: IModalOptions): IModalPromise<T>
 }
 
 interface IModalOptions {
 	/**
 	 * The title of the modal. If this option is present, a default header will be inserted into the template.
 	 */
-	title?: string
+	title?: string;
 	/**
 	 * The scope to derive from. If not passed, the $rootScope is used
 	 */
-	scope?: ng.IScope
+	scope?: ng.IScope;
 	/**
 	 * Objects to pass to the controller as $modalInstance.params
 	 */
-	params?: any
+	params?: any;
 	/**
 	 * The HTML of the view. Overriden by @templateUrl property
 	 */
-	template?: string|(() => string)
+	template?: string|(() => string);
 	/**
 	 * The URL of the view. Overrides @template
 	 */
-	templateUrl?: string|(() => string)
+	templateUrl?: string|(() => string);
 	/**
 	 * TRUE if the modal should have a fixed footer
 	 */
-	fixedFooter?: boolean
+	fixedFooter?: boolean;
 	/**
 	 * A controller definition
 	 */
-	controller?: Function|string
+	controller?: Function|string;
 	/**
 	 * The controller alias for the controllerAs sintax. Requires @controller
 	 */
-	controllerAs?: string
+	controllerAs?: string;
 	/**
 	 * One or more space-separated css classes to add to the generated .modal element.
 	 * @see {@link https://github.com/viniciusmelquiades/ngMaterialize/issues/2}
 	 */
-	cssClass?: string
+	cssClass?: string;
 }
 
-interface IModalInstance {
-	params: any
-	close(result?: any)
-	dismiss(reason?: any)
+interface IModalInstance {	
+	params: any;
+	close(result?: any);
+	dismiss(reason?: any);
 }
 
 interface IModalScope extends ng.IScope {
-	params?: any
-	$close?(result?: any)
-	$dismiss?(reason?: any)
+	params?: any;
+	$close?(result?: any);
+	$dismiss?(reason?: any);
+}
+
+interface IModalPromise<T> extends ng.IPromise<T> {
+	close<T>(result?: T);
+	dismiss(reason?: any);
 }
 
 ModalService.$inject = ['$q', '$http', '$controller', '$timeout', '$rootScope', '$compile'];
@@ -61,16 +66,30 @@ function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.ICo
 		open: open
 	};
 
-	function open<T>(options: IModalOptions) {
+	function open<T>(options: IModalOptions): IModalPromise<T> {
 		var resultDeferred = q.defer<T>();
-		var openedDeferred = q.defer<void>();
+		var canceled = false;
+		var close = (result?: T) => {
+			canceled = true;
+			resultDeferred.resolve(result);
+		}, dismiss = (reason?: any) => {
+			canceled = true;
+			resultDeferred.reject(reason);
+		};
 
 		getTemplate(options).then(function(modalBaseHtml) {
+			if(canceled){
+				return;
+			}
+			
 			var modalBase = angular.element(modalBaseHtml);
 
 			var scope: IModalScope = (options.scope || rootScope).$new(false),
 				modalInstance = getModalInstance(options, resultDeferred, modalBase, scope);
 
+			close = modalInstance.close;
+			dismiss = modalInstance.dismiss;
+			
 			scope.$close = modalInstance.close;
 			scope.$dismiss = modalInstance.dismiss;
 
@@ -89,7 +108,12 @@ function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.ICo
 				resultDeferred.reject({ templateError: error });
 			});
 
-		return resultDeferred.promise;
+		var promise = <IModalPromise<T>>resultDeferred.promise;
+
+		promise.close = (result?: T) => close(result);
+		promise.dismiss = (reason: any) => dismiss(reason);
+
+		return promise;
 	}
 
 	function getModalInstance(options: IModalOptions, resultDeferred: ng.IDeferred<any>, modalBase: JQuery, scope: ng.IScope): IModalInstance {
@@ -142,9 +166,9 @@ function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.ICo
 			if (options.cssClass) {
 				cssClass.push(options.cssClass);
 			}
-			
+
 			var html = [];
-			html.push(`<div class="${cssClass.join(' ')}">`);
+			html.push(`<div class="${cssClass.join(' ') }">`);
 			if (options.title) {
 				html.push('<div class="modal-header">');
 				html.push(options.title);
