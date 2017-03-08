@@ -1,6 +1,7 @@
 declare module materialize {
 
 var ngMaterialize: ng.IModule;
+function dropdown(timeout: ng.ITimeoutService): ng.IDirective;
 interface IModalService {
     open(options: IModalOptions): IModalPromise<any>;
     open<T>(options: IModalOptions): IModalPromise<T>;
@@ -60,5 +61,8 @@ interface IModalPromise<T> extends ng.IPromise<T> {
 }
 function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.IControllerService, timeout: ng.ITimeoutService, rootScope: ng.IRootScopeService, compile: ng.ICompileService): IModalService;
 function MaterialSelect($timeout: ng.ITimeoutService): ng.IDirective;
+var util: {
+    guid: () => string;
+};
 
 }

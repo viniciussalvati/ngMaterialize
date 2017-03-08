@@ -2,6 +2,49 @@
 
 "use strict";
 var ngMaterialize = angular.module('ngMaterialize', ['ng']);
+dropdown.$inject = ['$timeout'];
+function dropdown(timeout) {
+    return {
+        restrict: 'E',
+        link: link
+    };
+    function getOptions(scope, attrs) {
+        var options = {};
+        if ('inDuration' in attrs) {
+            options.inDuration = scope.$eval(attrs.inDuration);
+        }
+        if ('outDuration' in attrs) {
+            options.outDuration = scope.$eval(attrs.outDuration);
+        }
+        if ('constrainWidth' in attrs) {
+            options.constrain_width = scope.$eval(attrs.constrainWidth);
+        }
+        if ('hover' in attrs) {
+            options.hover = scope.$eval(attrs.hover);
+        }
+        if ('gutter' in attrs) {
+            options.gutter = scope.$eval(attrs.gutter);
+        }
+        if ('bellowOrigin' in attrs) {
+            options.bellowOrigin = scope.$eval(attrs.bellowOrigin);
+        }
+        return options;
+    }
+    function link(scope, element, attrs) {
+        var button = element.find('.dropdown-button').first();
+        var content = element.find('.dropdown-content').first();
+        if (button.length > 0 || content.length > 0) {
+            timeout(function () {
+                var id = util.guid();
+                var options = getOptions(scope, attrs);
+                button.attr('data-activates', id);
+                content.attr('id', id);
+                button.dropdown(options);
+            }, 0, false);
+        }
+    }
+}
+ngMaterialize.directive('dropdown', dropdown);
 ModalService.$inject = ['$q', '$http', '$controller', '$timeout', '$rootScope', '$compile'];
 function ModalService(q, http, controller, timeout, rootScope, compile) {
     var service = {
@@ -30,9 +73,7 @@ function ModalService(q, http, controller, timeout, rootScope, compile) {
             compile(modalBase)(scope);
             var openModalOptions = {
                 //ready: function() { openedDeferred.resolve(); }, // Callback for Modal open
-                complete: function () {
-                    modalInstance.dismiss();
-                } // Callback for Modal close
+                complete: function () { modalInstance.dismiss(); } // Callback for Modal close
             };
             executeController(options, modalInstance, scope);
             modalBase.appendTo('body').openModal(openModalOptions);
@@ -73,8 +114,8 @@ function ModalService(q, http, controller, timeout, rootScope, compile) {
         return new q(function (resolve, reject) {
             if (options.templateUrl) {
                 var url = resolveFunction(options.templateUrl);
-                http.get(url).success(function (data) {
-                    resolve(data);
+                http.get(url).then(function (response) {
+                    resolve(response.data);
                 }).catch(function (error) {
                     reject(error);
                 });
@@ -147,5 +188,17 @@ function MaterialSelect($timeout) {
     return directive;
 }
 ngMaterialize.directive('select', MaterialSelect);
+var util = {
+    guid: (function () {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        return function () {
+            return "" + s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
+        };
+    }())
+};
 
 })(window.angular);
