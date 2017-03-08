@@ -17,15 +17,16 @@
   },
   "homepage": "https://github.com/viniciusmelquiades/ngMaterialize#readme",
   "devDependencies": {
+    "event-stream": "^3.3.1",
     "gulp": "^3.8.11",
-    "gulp-util": "^3.0.4",
-    "gulp-typescript": "^2.7.5",
-    "gulp-concat": "^2.5.2",
-    "gulp-uglify": "^1.2.0",
-    "gulp-gzip": "^1.1.0",
-    "gulp-replace": "^0.5.3",
-    "gulp-rename": "^1.2.2",
     "gulp-clone": "^1.0.0",
-    "event-stream": "^3.3.1"
+    "gulp-concat": "^2.5.2",
+    "gulp-gzip": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.3",
+    "gulp-typescript": "^2.7.5",
+    "gulp-uglify": "^1.2.0",
+    "gulp-util": "^3.0.4",
+    "tsd": "^0.6.5"
   }
 }
