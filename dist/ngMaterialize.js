@@ -174,16 +174,21 @@ function MaterialSelect($timeout) {
         require: '?ngModel'
     };
     function link(scope, element, attrs, ngModel) {
+        var created = false;
+        var create = function () {
+            created && destroy();
+            element.material_select();
+            created = true;
+        };
+        var destroy = function () {
+            element.material_select('destroy');
+            element.siblings('span.caret').remove();
+        };
         $timeout(create);
         if (ngModel) {
             ngModel.$render = create;
         }
-        function create() {
-            element.material_select();
-        }
-        element.one('$destroy', function () {
-            element.material_select('destroy');
-        });
+        element.one('$destroy', destroy);
     }
     return directive;
 }
