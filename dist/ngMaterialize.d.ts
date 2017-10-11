@@ -44,6 +44,26 @@ interface IModalOptions {
      * @see {@link https://github.com/viniciusmelquiades/ngMaterialize/issues/2}
      */
     cssClass?: string;
+    /**
+     * Options passed to Materialize's .openModal (or .modal) method;
+     * @see {@link http://materializecss.com/modals.html}
+     */
+    materializeOptions?: IMaterializeModalOptions;
+}
+interface IMaterializeModalOptions {
+    [key: string]: any;
+    /** Modal can be dismissed by clicking outside of the modal */
+    dismissible?: boolean;
+    /** Opacity of modal background */
+    opacity?: number;
+    /** Transition in duration */
+    inDuration?: number;
+    /** Transition out duration */
+    outDuration?: number;
+    /** Starting top style attribute */
+    startingTop?: string;
+    /** Ending top style attribute */
+    endingTop?: string;
 }
 interface IModalInstance {
     params: any;
@@ -56,7 +76,7 @@ interface IModalScope extends ng.IScope {
     $dismiss?(reason?: any): any;
 }
 interface IModalPromise<T> extends ng.IPromise<T> {
-    close<T>(result?: T): any;
+    close(result?: T): void;
     dismiss(reason?: any): any;
 }
 function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.IControllerService, timeout: ng.ITimeoutService, rootScope: ng.IRootScopeService, compile: ng.ICompileService): IModalService;

@@ -71,12 +71,16 @@ function ModalService(q, http, controller, timeout, rootScope, compile) {
             scope.$close = modalInstance.close;
             scope.$dismiss = modalInstance.dismiss;
             compile(modalBase)(scope);
-            var openModalOptions = {
+            var openModalOptions = angular.extend(options.materializeOptions || {}, {
                 //ready: function() { openedDeferred.resolve(); }, // Callback for Modal open
                 complete: function () { modalInstance.dismiss(); } // Callback for Modal close
-            };
+            });
             executeController(options, modalInstance, scope);
-            modalBase.appendTo('body').openModal(openModalOptions);
+            var el = modalBase.appendTo('body');
+            if (angular.isFunction(el.openModal))
+                el.openModal(openModalOptions);
+            else
+                el.modal(openModalOptions);
         }, function (error) {
             resultDeferred.reject({ templateError: error });
         });
@@ -147,7 +151,10 @@ function ModalService(q, http, controller, timeout, rootScope, compile) {
         });
     }
     function closeModal(modalBase, scope) {
-        modalBase.closeModal();
+        if (angular.isFunction(modalBase.closeModal))
+            modalBase.closeModal();
+        else
+            modalBase.modal('close');
         timeout(function () {
             scope.$destroy();
             modalBase.remove();

@@ -41,6 +41,28 @@ interface IModalOptions {
 	 * @see {@link https://github.com/viniciusmelquiades/ngMaterialize/issues/2}
 	 */
 	cssClass?: string;
+	/**
+	 * Options passed to Materialize's .openModal (or .modal) method;
+	 * @see {@link http://materializecss.com/modals.html}
+	 */
+	materializeOptions?: IMaterializeModalOptions
+}
+
+interface IMaterializeModalOptions {
+	[key: string]: any;
+
+	/** Modal can be dismissed by clicking outside of the modal */
+	dismissible?: boolean;
+	/** Opacity of modal background */
+	opacity?: number;
+	/** Transition in duration */
+	inDuration?: number;
+	/** Transition out duration */
+	outDuration?: number;
+	/** Starting top style attribute */
+	startingTop?: string;
+	/** Ending top style attribute */
+	endingTop?: string;
 }
 
 interface IModalInstance {
@@ -56,7 +78,7 @@ interface IModalScope extends ng.IScope {
 }
 
 interface IModalPromise<T> extends ng.IPromise<T> {
-	close<T>(result?: T);
+	close(result?: T): void;
 	dismiss(reason?: any);
 }
 
@@ -78,7 +100,7 @@ function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.ICo
 		};
 
 		getTemplate(options).then(function (modalBaseHtml) {
-			if (canceled) {
+			if(canceled) {
 				return;
 			}
 
@@ -95,22 +117,27 @@ function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.ICo
 
 			compile(modalBase)(scope);
 
-			var openModalOptions = {
+			const openModalOptions = angular.extend(options.materializeOptions || {}, {
 				//ready: function() { openedDeferred.resolve(); }, // Callback for Modal open
 				complete: function () { modalInstance.dismiss(); } // Callback for Modal close
-			};
+			});
 
 			executeController(options, modalInstance, scope);
 
-			modalBase.appendTo('body').openModal(openModalOptions);
+			const el = modalBase.appendTo('body');
+
+			if(angular.isFunction(el.openModal))
+				el.openModal(openModalOptions);
+			else
+				el.modal(openModalOptions);
 
 		}, function (error) {
 			resultDeferred.reject({ templateError: error });
 		});
 
-		var promise = <IModalPromise<T>>resultDeferred.promise;
+		const promise = <IModalPromise<T>>resultDeferred.promise;
 
-		promise.close = (result?: T) => close(result);
+		promise.close = (result: any) => close(result);
 		promise.dismiss = (reason: any) => dismiss(reason);
 
 		return promise;
@@ -131,7 +158,7 @@ function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.ICo
 	}
 
 	function executeController(options: IModalOptions, modalInstance: IModalInstance, scope: ng.IScope) {
-		if (!options.controller) return;
+		if(!options.controller) return;
 		var controllerDefinitionOrName: any = options.controller;
 
 		var ctrl = controller(controllerDefinitionOrName, {
@@ -139,14 +166,14 @@ function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.ICo
 			$modalInstance: modalInstance
 		});
 
-		if (angular.isString(options.controllerAs)) {
+		if(angular.isString(options.controllerAs)) {
 			scope[options.controllerAs] = ctrl;
 		}
 	}
 
 	function getTemplate(options: IModalOptions): ng.IPromise<string> {
 		return new q((resolve, reject) => {
-			if (options.templateUrl) {
+			if(options.templateUrl) {
 				var url = resolveFunction<string>(options.templateUrl);
 				http.get(url).then(function (response) {
 					resolve(response.data);
@@ -159,17 +186,17 @@ function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.ICo
 		}).then(function (template: string) {
 
 			var cssClass = ['modal'];
-			if (options.fixedFooter) {
+			if(options.fixedFooter) {
 				cssClass.push('modal-fixed-footer');
 			}
 
-			if (options.cssClass) {
+			if(options.cssClass) {
 				cssClass.push(options.cssClass);
 			}
 
 			var html = [];
 			html.push(`<div class="${cssClass.join(' ')}">`);
-			if (options.title) {
+			if(options.title) {
 				html.push('<div class="modal-header">');
 				html.push(options.title);
 				html.push('<a class="grey-text text-darken-2 right" data-ng-click="$dismiss()">');
@@ -185,7 +212,10 @@ function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.ICo
 	}
 
 	function closeModal(modalBase: JQuery, scope: ng.IScope) {
-		modalBase.closeModal();
+		if(angular.isFunction(modalBase.closeModal))
+			modalBase.closeModal();
+		else
+			modalBase.modal('close');
 
 		timeout(function () {
 			scope.$destroy();
@@ -194,7 +224,7 @@ function ModalService(q: ng.IQService, http: ng.IHttpService, controller: ng.ICo
 	}
 
 	function resolveFunction<T>(fn, ...args: any[]): T {
-		if (angular.isFunction(fn)) {
+		if(angular.isFunction(fn)) {
 			return fn(args);
 		}
 
